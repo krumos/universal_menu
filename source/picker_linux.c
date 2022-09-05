@@ -17,16 +17,16 @@ void set_cursor_to_start()
 
 static struct termios old, current;
 
-void initTermios()
+void init_termios()
 {
-    tcgetattr(0, &old); /* grab old terminal i/o settings */
-    current = old; /* make new settings same as old settings */
-    current.c_lflag &= ~ICANON; /* disable buffered i/o */
-    current.c_lflag &= ~ECHO; /* set no echo mode */
-    tcsetattr(0, TCSANOW, &current); /* use these new terminal i/o settings now */
+    tcgetattr(0, &old);
+    current = old;
+    current.c_lflag &= ~ICANON;
+    current.c_lflag &= ~ECHO;
+    tcsetattr(0, TCSANOW, &current);
 }
 
-void resetTermios(void)
+void reset_termios(void)
 {
     tcsetattr(0, TCSANOW, &old);
 }
@@ -34,7 +34,7 @@ void resetTermios(void)
 
 KEY_T read_key()
 {
-    initTermios();
+    init_termios();
     int c = fgetc(stdin);
     if (c == 27)
     {
@@ -42,7 +42,7 @@ KEY_T read_key()
         if (c == 91)
         {
             c = fgetc(stdin);
-            resetTermios();
+            reset_termios();
             if (c == 65)
                 return UP_KEY;
             if (c == 66)
@@ -51,10 +51,10 @@ KEY_T read_key()
     }
     else if (c == 10)
     {
-        resetTermios();
+        reset_termios();
         return ENTER_KEY;
     }
-    resetTermios();
+    reset_termios();
     return DEFAULT_KEY;
 }
 

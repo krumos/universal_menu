@@ -6,7 +6,7 @@
 
 struct menu;
 
-typedef struct menu *MENU;
+typedef struct menu* MENU;
 
 MENU create_menu();
 

@@ -7,7 +7,6 @@
 #define MENU_EXIT_TEXT "Exit"
 #define ACTIVE_COLOR "\033[1;31m"
 
-
 struct menu
 {
     struct Items *items;
@@ -27,28 +26,52 @@ MENU create_menu()
 
 void add_command(MENU menu, void(*func)(void), const char *description)
 {
-    struct Item item = {.description = description, .type = COMMAND_TYPE_ITEM, .entity.func = func, .is_active = DEFAULT_STATE};
+    struct Item item =
+            {
+                    .description = description,
+                    .type = COMMAND_TYPE_ITEM,
+                    .entity.func = func,
+                    .is_active = DEFAULT_STATE
+            };
 
     push_list(menu->items, &item);
 }
 
 void add_command_with_data(MENU menu, void(*func)(void *), const char *description, void *data)
 {
-    struct Item item = {.description = description, .type = COMMAND_W_DATA_TYPE_ITEM, .entity.func_w_data = func, .is_active = DEFAULT_STATE, .data = data};
+    struct Item item =
+            {
+                    .description = description,
+                    .type = COMMAND_W_DATA_TYPE_ITEM,
+                    .entity.func_w_data = func,
+                    .is_active = DEFAULT_STATE,
+                    .data = data
+            };
 
     push_list(menu->items, &item);
 }
 
 void add_exit(MENU menu, const char *description)
 {
-    struct Item item = {.description = description, .type = EXIT_TYPE_ITEM, .is_active = DEFAULT_STATE};
+    struct Item item =
+            {
+                    .description = description,
+                    .type = EXIT_TYPE_ITEM,
+                    .is_active = DEFAULT_STATE
+            };
 
     push_list(menu->items, &item);
 }
 
 void add_sub_menu(MENU menu, MENU sub_menu, const char *description)
 {
-    struct Item item = {.description = description, .type = MENU_TYPE_ITEM, .entity.menu = sub_menu, .is_active = DEFAULT_STATE};
+    struct Item item =
+            {
+                    .description = description,
+                    .type = MENU_TYPE_ITEM,
+                    .entity.menu = sub_menu,
+                    .is_active = DEFAULT_STATE
+            };
 
     push_list(menu->items, &item);
     sub_menu->items->head->element->is_active = ACTIVE_STATE;
@@ -57,11 +80,14 @@ void add_sub_menu(MENU menu, MENU sub_menu, const char *description)
 
 void print_menu(struct menu *menu)
 {
-    set_cursor_to_start();
     struct Node *node = menu->items->head;
+
+    set_cursor_to_start();
+
     while (node != NULL)
     {
         struct Item *item = node->element;
+
         if (item->is_active == ACTIVE_STATE)
         {
             printf(ACTIVE_COLOR);
@@ -69,7 +95,10 @@ void print_menu(struct menu *menu)
             printf("\033[0m");
         }
         else
+        {
             printf("%s\n", item->description);
+        }
+
         node = node->next;
     }
 }
@@ -84,6 +113,7 @@ void print_back_menu()
 void select_next_item(MENU menu, struct Node **node)
 {
     (*node)->element->is_active = DEFAULT_STATE;
+
     if ((*node)->next != NULL)
     {
         (*node)->next->element->is_active = ACTIVE_STATE;
@@ -100,6 +130,7 @@ void select_next_item(MENU menu, struct Node **node)
 void select_prev_item(MENU menu, struct Node **node)
 {
     (*node)->element->is_active = DEFAULT_STATE;
+
     if ((*node)->prev != NULL)
     {
         (*node)->prev->element->is_active = ACTIVE_STATE;
@@ -112,26 +143,26 @@ void select_prev_item(MENU menu, struct Node **node)
     }
 }
 
-void execute_command_item(MENU menu, struct Node *node)
+void invoke_void_func(struct Node* node)
 {
-    clear_console();
     node->element->entity.func();
-    print_back_menu();
-    while (read_key() != ENTER_KEY);
-    clear_console();
-    print_menu(menu);
 }
 
-void execute_command_w_data_item(MENU menu, struct Node *node)
+void invoke_data_func(struct Node* node)
+{
+    node->element->entity.func_w_data(node->element->data);
+}
+
+void execute_command(MENU menu, struct Node *node, void(*invoke_func)(struct Node*))
 {
     clear_console();
-    node->element->entity.func_w_data(node->element->data);
+    invoke_func(node);
     print_back_menu();
     while (read_key() != ENTER_KEY);
     clear_console();
     print_menu(menu);
-}
 
+}
 
 void menu_worker(struct menu *menu)
 {
@@ -160,10 +191,10 @@ void menu_worker(struct menu *menu)
                 switch (node->element->type)
                 {
                     case COMMAND_TYPE_ITEM:
-                        execute_command_item(menu, node);
+                        execute_command(menu, node, invoke_void_func);
                         break;
                     case COMMAND_W_DATA_TYPE_ITEM:
-                        execute_command_w_data_item(menu, node);
+                        execute_command(menu, node, invoke_data_func);
                         break;
                     case MENU_TYPE_ITEM:
                         execute_menu_item(menu, node);
@@ -194,15 +225,21 @@ void execute_menu(MENU menu)
 void free_menu(MENU menu)
 {
     struct Node *node = menu->items->head;
+
     while (node != NULL)
     {
         struct Node *next = node->next;
 
         if (node->element->type == MENU_TYPE_ITEM)
+        {
             free_menu(node->element->entity.menu);
+        }
 
         if (node->element->type == COMMAND_W_DATA_TYPE_ITEM)
+        {
             free(node->element->data);
+        }
+
         free_node(node);
         node = next;
     }

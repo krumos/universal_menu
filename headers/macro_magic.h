@@ -29,11 +29,11 @@ struct FUNC_NAME##_args * FUNC_NAME##_pack(A1(__VA_ARGS__))                   \
     return tmp;     \
 }                   \
 
-#define UNPACK_STRUCT(FUNC, STRUCT_NAME) \
+#define UNPACK_ARGS(FUNC, STRUCT_NAME) \
           struct FUNC##_args* args = (struct FUNC##_args*)STRUCT_NAME
 
 
-#define ARG_STRUCT(FUNC_NAME, ...) struct FUNC_NAME##_args {M1(__VA_ARGS__)}; \
+#define ARG_PACKER(FUNC_NAME, ...) struct FUNC_NAME##_args {M1(__VA_ARGS__)}; \
 PACK_STRUCT(FUNC_NAME, __VA_ARGS__)                                           \
 
 

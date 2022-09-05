@@ -3,6 +3,6 @@
 
 #include "headers/macro_magic.h" //required header
 
-ARG_STRUCT(foo_w_data, int, a, int, b, int, c);
+ARG_PACKER(foo_w_data, int, a, int, b, int, c);
 
 #endif //UNIVERSAL_MENU_ARGS_H

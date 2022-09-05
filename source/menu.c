@@ -37,7 +37,7 @@ void add_command(MENU menu, void(*func)(void), const char *description)
     push_list(menu->items, &item);
 }
 
-void add_command_with_data(MENU menu, void(*func)(void *), const char *description, void *data)
+void add_data_command(MENU menu, void(*func)(void *), const char *description, void *data)
 {
     struct Item item =
             {

@@ -9,7 +9,7 @@ void foo()
 
 void foo_w_data(void *data)
 {
-    UNPACK_STRUCT(foo_w_data, data);
+    UNPACK_ARGS(foo_w_data, data);
 
     printf("%d\n", args->a);
     printf("%d\n", args->b);
@@ -32,7 +32,7 @@ int main()
 
     add_command(menu, func, "func");
     add_command(menu, foo, "foo_func");
-    add_command_with_data(menu, foo_w_data, "wdata", foo_w_data_pack(1, 2, 3));
+    add_data_command(menu, foo_w_data, "wdata", foo_w_data_pack(1, 2, 3));
 
     MENU sub_menu = create_menu();
     add_command(sub_menu, foobuzz, "foobuzz");

@@ -12,7 +12,7 @@ MENU create_menu();
 
 void add_command(MENU menu, void(*func)(void), const char *description);
 
-void add_command_with_data(MENU menu, void(*func)(void *), const char *description, void *data);
+void add_data_command(MENU menu, void(*func)(void *), const char *description, void *data);
 
 void execute_menu(MENU menu);
 

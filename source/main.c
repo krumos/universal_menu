@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "headers/menu.h"
-#include "args.h"
+#include "../headers/menu.h"
+#include "../headers/args.h"
 
 void foo()
 {

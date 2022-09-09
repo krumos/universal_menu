@@ -3,7 +3,7 @@
 
 #include "keys.h"
 
-KEY_T read_key();
+key_e read_key();
 
 void clear_console();
 

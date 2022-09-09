@@ -2,7 +2,7 @@
 #include <conio.h>
 #include <windows.h>
 #include "../headers/picker.h"
-KEY_T read_key()
+key_e read_key()
 {
     char c = getch();
     switch (c)

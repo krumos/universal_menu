@@ -1,6 +1,6 @@
-# Universal menu
+# Universal menu_t
 
-Данный модуль создать с целью упросить написание интерфейса для лабораторных работ по дисциплине "ТИСД"
+Данный модуль создан с целью упросить написание интерфейса для лабораторных работ по дисциплине "ТИСД"
 
 Модуль работает под системами linux и windows(на маке не проверял, но должно работать. Естественно работает в WSL и MSYS)
 Если работаете в CLion или в другой IDE которая эмулирует собственный терминал, то необходимо запускать программу во внешнем терминале.
@@ -21,7 +21,7 @@
 ```
 void func()
 {
-    printf("Hello menu");
+    printf("Hello menu_t");
 }
 ```
 Изменим `main` подобным образом:
@@ -29,17 +29,17 @@ void func()
 int main()
 {
     //Создаем меню
-    MENU menu = create_menu();
+    menu_t menu_t = create_menu();
     
     //Добавляем команду в меню
     // Сигнатура: void add_command(меню, навзание функции(указатель на функцию), строка для отображения в меню)
-    add_command(menu, func, "func");
+    add_command(menu_t, func, "func");
     
     //Запускаем меню
-    execute_menu(menu);
+    execute_menu(menu_t);
 
     //Освобождаем ресурсы
-    free_menu(menu);
+    free_menu(menu_t);
 }
 ```
 
@@ -51,7 +51,7 @@ Exit
 Взаимодействие с меню осуществляется с помощью стрелок `↓ ↑` и `Enter`
 При выборе пункта `func` произойдет вызов функции, и вывод станет таким:
 ```
-Hello menu
+Hello menu_t
 Back
 ```
 для выхода из меню нажмите `Enter`, а после - выберите `Exit`
@@ -70,21 +70,21 @@ void foobuzz()
 ```
 int main()
 {
-    MENU menu = create_menu();
+    menu_t menu_t = create_menu();
 
-    add_command(menu, func, "func");
+    add_command(menu_t, func, "func");
 
     //Создадим меню которое будет вложенным в основное
-    MENU sub_menu = create_menu();
+    menu_t sub_menu = create_menu();
     //Добавим в него необходимые команды
     add_command(sub_menu, foobuzz, "foobuzz");
     
-    //"Вкладываем" sub_menu в menu
-    add_sub_menu(menu, sub_menu, "foo_menu");
+    //"Вкладываем" sub_menu в menu_t
+    add_sub_menu(menu_t, sub_menu, "foo_menu");
 
-    execute_menu(menu);
+    execute_menu(menu_t);
 
-    free_menu(menu);
+    free_menu(menu_t);
 }
 ```
 
@@ -101,11 +101,11 @@ void foo_w_data(int a, int b, int c)
 ```
 
 Эта функция не подходит по сигнатуре для функции `add_command`
-Для функций, которым необходимо передать какие-то аргументы, следует использовать функцию `add_data_command`
+Для функций, которым необходимо передать какие-то аргументы, следует использовать функцию `add_args_command`
 
-`void add_data_command(MENU menu, void(*func)(void *), const char *description, void *data);`
+`void add_args_command(menu_t menu_t, void(*func)(void *), const char *description, void *packed_args);`
 
-Но как `int a, int b, int c` превратить в `void* data` ?
+Но как `int a, int b, int c` превратить в `void* packed_args` ?
 
 Для этого необходимо перейти в файл `args.h` и прописать следующее: 
 
@@ -147,17 +147,17 @@ void foo_w_data(int a, int b, int c)
 Чтобы воспользоваться "упаковкой", необходимо вызвать функцию, название которой состоит из `названия функции + _pack`,
 и передать необходимые аргументы. В данном случае `foo_w_data_pack(1, 2, 3)`
 
-`add_data_command(menu, foo_w_data, "wdata", foo_w_data_pack(1, 2, 3));`
+`add_args_command(menu_t, foo_w_data, "wdata", foo_w_data_pack(1, 2, 3));`
 
 Но `foo_w_data` все еще не подходит по сигнатуре. Перепишем ее подобным образом:
 ```
 //Сигнатура void func(void *)
-void foo_w_data(void *data)
+void foo_w_data(void *packed_args)
 {
-    //Чтобы вытянуть из data необходимые аргументы, нужно воспользоваться следующим макросом.
+    //Чтобы вытянуть из packed_args необходимые аргументы, нужно воспользоваться следующим макросом.
     //Первый аргумент - название текущей функции(или название упаковщика)
     //Второй аргумент - имя аргумента для данных
-    UNPACK_ARGS(foo_w_data, data);
+    UNPACK_ARGS(foo_w_data, packed_args);
     
     
     //Теперь мы можем получить доступ к  a, b, c через args->имя_аргумента

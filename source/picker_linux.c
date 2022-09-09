@@ -32,7 +32,7 @@ void reset_termios(void)
 }
 
 
-KEY_T read_key()
+key_e read_key()
 {
     init_termios();
     int c = fgetc(stdin);

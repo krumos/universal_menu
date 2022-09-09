@@ -3,7 +3,7 @@
 
 #include "menu.h"
 
-enum TYPE
+enum MENU_ITEM_TYPE
 {
     COMMAND_TYPE_ITEM,
     COMMAND_W_DATA_TYPE_ITEM,
@@ -11,17 +11,17 @@ enum TYPE
     EXIT_TYPE_ITEM,
 };
 
-enum IS_ACTIVE
+enum MENU_ITEM_STATE
 {
     ACTIVE_STATE,
     DEFAULT_STATE,
 };
 
-struct Item
+struct MenuItem
 {
     const char *description;
-    enum TYPE type;
-    enum IS_ACTIVE is_active;
+    enum MENU_ITEM_TYPE type;
+    enum MENU_ITEM_STATE is_active;
 
     union
     {
@@ -29,9 +29,9 @@ struct Item
 
         void (*func_w_data)(void *);
 
-        struct menu *menu;
+        struct Menu *menu;
     } entity;
 
-    void *data;
+    void *packed_args;
 };
 #endif //UNIVERSAL_MENU_ITEM_H

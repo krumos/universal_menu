@@ -6,5 +6,5 @@ typedef enum KEYS
     UP_KEY,
     DOWN_KEY,
     ENTER_KEY
-} KEY_T;
+} key_e;
 #endif //UNIVERSAL_MENU_KEYS_H

@@ -4,20 +4,20 @@
 #include "stdio.h"
 #include "items_list.h"
 
-struct menu;
+struct Menu;
 
-typedef struct menu* MENU;
+typedef struct Menu* menu_t;
 
-MENU create_menu();
+menu_t create_menu();
 
-void add_command(MENU menu, void(*func)(void), const char *description);
+void add_command(menu_t menu, void(*func)(void), const char *description);
 
-void add_data_command(MENU menu, void(*func)(void *), const char *description, void *data);
+void add_args_command(menu_t menu, void(*func)(void *), const char *description, void *packed_args);
 
-void execute_menu(MENU menu);
+void execute_menu(menu_t menu);
 
-void add_sub_menu(MENU menu, MENU sub_menu, const char *description);
+void add_sub_menu(menu_t menu, menu_t sub_menu, const char *description);
 
-void free_menu(MENU menu);
+void free_menu(menu_t menu);
 
 #endif //UNIVERSAL_MENU_MENU_H

@@ -23,18 +23,18 @@ void foobuzz()
 
 void func()
 {
-    printf("Hello menu");
+    printf("Hello menu_t");
 }
 
 int main()
 {
-    MENU menu = create_menu();
+    menu_t menu = create_menu();
 
     add_command(menu, func, "func");
     add_command(menu, foo, "foo_func");
-    add_data_command(menu, foo_w_data, "wdata", foo_w_data_pack(1, 2, 3));
+    add_args_command(menu, foo_w_data, "wdata", foo_w_data_pack(1, 2, 3));
 
-    MENU sub_menu = create_menu();
+    menu_t sub_menu = create_menu();
     add_command(sub_menu, foobuzz, "foobuzz");
     add_sub_menu(menu, sub_menu, "foo_menu");
 

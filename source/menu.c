@@ -7,26 +7,26 @@
 #define MENU_EXIT_TEXT "Exit"
 #define ACTIVE_COLOR "\033[1;31m"
 
-struct menu
+struct Menu
 {
-    struct Items *items;
+    struct MenuItemsList *items;
 };
 
-void execute_menu_item(MENU menu, struct Node *node);
+void execute_menu_item(menu_t menu, struct Node *node);
 
-MENU create_menu()
+menu_t create_menu()
 {
-    MENU menu = malloc(sizeof(struct menu));
+    menu_t menu = malloc(sizeof(struct Menu));
 
-    menu->items = malloc(sizeof(struct Items));
-    init_list(menu->items);
+    menu->items = malloc(sizeof(struct MenuItemsList));
+    init(menu->items);
 
     return menu;
 }
 
-void add_command(MENU menu, void(*func)(void), const char *description)
+void add_command(menu_t menu, void(*func)(void), const char *description)
 {
-    struct Item item =
+    struct MenuItem item =
             {
                     .description = description,
                     .type = COMMAND_TYPE_ITEM,
@@ -34,38 +34,38 @@ void add_command(MENU menu, void(*func)(void), const char *description)
                     .is_active = DEFAULT_STATE
             };
 
-    push_list(menu->items, &item);
+    push(menu->items, &item);
 }
 
-void add_data_command(MENU menu, void(*func)(void *), const char *description, void *data)
+void add_args_command(menu_t menu, void(*func)(void *), const char *description, void *packed_args)
 {
-    struct Item item =
+    struct MenuItem item =
             {
                     .description = description,
                     .type = COMMAND_W_DATA_TYPE_ITEM,
                     .entity.func_w_data = func,
                     .is_active = DEFAULT_STATE,
-                    .data = data
+                    .packed_args = packed_args
             };
 
-    push_list(menu->items, &item);
+    push(menu->items, &item);
 }
 
-void add_exit(MENU menu, const char *description)
+void add_exit(menu_t menu, const char *description)
 {
-    struct Item item =
+    struct MenuItem item =
             {
                     .description = description,
                     .type = EXIT_TYPE_ITEM,
                     .is_active = DEFAULT_STATE
             };
 
-    push_list(menu->items, &item);
+    push(menu->items, &item);
 }
 
-void add_sub_menu(MENU menu, MENU sub_menu, const char *description)
+void add_sub_menu(menu_t menu, menu_t sub_menu, const char *description)
 {
-    struct Item item =
+    struct MenuItem item =
             {
                     .description = description,
                     .type = MENU_TYPE_ITEM,
@@ -73,12 +73,12 @@ void add_sub_menu(MENU menu, MENU sub_menu, const char *description)
                     .is_active = DEFAULT_STATE
             };
 
-    push_list(menu->items, &item);
+    push(menu->items, &item);
     sub_menu->items->head->element->is_active = ACTIVE_STATE;
     add_exit(sub_menu, MENU_BACK_TEXT);
 }
 
-void print_menu(struct menu *menu)
+void print_menu(menu_t menu)
 {
     struct Node *node = menu->items->head;
 
@@ -86,7 +86,7 @@ void print_menu(struct menu *menu)
 
     while (node != NULL)
     {
-        struct Item *item = node->element;
+        struct MenuItem *item = node->element;
 
         if (item->is_active == ACTIVE_STATE)
         {
@@ -110,7 +110,7 @@ void print_back_menu()
     printf("\033[0m");
 }
 
-void select_next_item(MENU menu, struct Node **node)
+void select_next_item(menu_t menu, struct Node **node)
 {
     (*node)->element->is_active = DEFAULT_STATE;
 
@@ -127,7 +127,7 @@ void select_next_item(MENU menu, struct Node **node)
 }
 
 
-void select_prev_item(MENU menu, struct Node **node)
+void select_prev_item(menu_t menu, struct Node **node)
 {
     (*node)->element->is_active = DEFAULT_STATE;
 
@@ -150,10 +150,10 @@ void invoke_void_func(struct Node* node)
 
 void invoke_data_func(struct Node* node)
 {
-    node->element->entity.func_w_data(node->element->data);
+    node->element->entity.func_w_data(node->element->packed_args);
 }
 
-void execute_command(MENU menu, struct Node *node, void(*invoke_func)(struct Node*))
+void execute_command(menu_t menu, struct Node *node, void(*invoke_func)(struct Node*))
 {
     clear_console();
     invoke_func(node);
@@ -164,7 +164,7 @@ void execute_command(MENU menu, struct Node *node, void(*invoke_func)(struct Nod
 
 }
 
-void menu_worker(struct menu *menu)
+void menu_worker(menu_t menu)
 {
     clear_console();
 
@@ -177,7 +177,7 @@ void menu_worker(struct menu *menu)
     {
         print_menu(menu);
 
-        KEY_T c = read_key();
+        key_e c = read_key();
 
         switch (c)
         {
@@ -207,14 +207,14 @@ void menu_worker(struct menu *menu)
     }
 }
 
-void execute_menu_item(MENU menu, struct Node *node)
+void execute_menu_item(menu_t menu, struct Node *node)
 {
     clear_console();
     menu_worker(node->element->entity.menu);
     print_menu(menu);
 }
 
-void execute_menu(MENU menu)
+void execute_menu(menu_t menu)
 {
     add_exit(menu, MENU_EXIT_TEXT);
     struct Node *node = menu->items->head;
@@ -222,7 +222,7 @@ void execute_menu(MENU menu)
     menu_worker(menu);
 }
 
-void free_menu(MENU menu)
+void free_menu(menu_t menu)
 {
     struct Node *node = menu->items->head;
 
@@ -237,7 +237,7 @@ void free_menu(MENU menu)
 
         if (node->element->type == COMMAND_W_DATA_TYPE_ITEM)
         {
-            free(node->element->data);
+            free(node->element->packed_args);
         }
 
         free_node(node);

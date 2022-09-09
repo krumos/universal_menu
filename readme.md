@@ -18,14 +18,14 @@
 
 >**_Важно:_**  Функция должна соответствовать сигнатуре `void funcname()`.
 > Функция не должна принимать или возвращать параметры. Функции с аргументами будут рассмотрены ниже.
-```
+```C
 void func()
 {
     printf("Hello menu");
 }
 ```
 Изменим `main` подобным образом:
-```
+```C
 int main()
 {
     //Создаем меню
@@ -59,7 +59,7 @@ Back
 #### Добавление вложенного меню
 
 Добавим еще одну функцию:
-```
+```C
 void foobuzz()
 {
     printf("foobuzz\n");
@@ -67,7 +67,7 @@ void foobuzz()
 ```
 Модифицируем `main`
 
-```
+```C
 int main()
 {
     menu_t menu = create_menu();
@@ -91,7 +91,7 @@ int main()
 #### Добавление команды, которая принимает аргументы
 
 Представим что у нас есть функция которая должна принимать некоторые аргументы:
-```
+```C
 void foo_w_data(int a, int b, int c)
 {
     printf("%d\n", a);
@@ -121,7 +121,7 @@ void foo_w_data(int a, int b, int c)
 
 Этот макрос создает "упаковщик" аргументов:
    - Создается структура
-     ```
+     ```C
      struct foo_w_data_args
      {
         int a;
@@ -131,7 +131,7 @@ void foo_w_data(int a, int b, int c)
      ```
    - Создается функция инициализации `pack`
 
-        ```    
+        ```C
          struct foo_w_data_args * foo_w_data_pack(int a, int b, int c)                   
          {                                                                            
             struct foo_w_data_args* tmp = malloc(sizeof(struct foo_w_data_args));   
@@ -150,7 +150,7 @@ void foo_w_data(int a, int b, int c)
 `add_args_command(menu, foo_w_data, "wdata", foo_w_data_pack(1, 2, 3));`
 
 Но `foo_w_data` все еще не подходит по сигнатуре. Перепишем ее подобным образом:
-```
+```C
 //Сигнатура void func(void *)
 void foo_w_data(void *packed_args)
 {

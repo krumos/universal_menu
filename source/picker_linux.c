@@ -1,4 +1,4 @@
-#ifdef __linux__
+#if defined __linux__ || defined __APPLE__
 #include "../headers/keys.h"
 #include "../headers/picker.h"
 #include <termios.h>

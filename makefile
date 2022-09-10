@@ -26,6 +26,6 @@ $(OUT_DIR)%.o : $(SRC_DIR)%.c
 	$(CC) -I headers/ -MD $< > $@
 
 clean :
-	rm -r out
+	rm -r $(OUT_DIR)
 	rm -f *.exe
 	rm -f *.d

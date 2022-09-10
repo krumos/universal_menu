@@ -1,5 +1,5 @@
 #include <string.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include "../headers/items_list.h"
 
 struct Node *init(struct MenuItemsList *items)

@@ -1,4 +1,4 @@
-#include <malloc.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include "../headers/menu.h"
 #include "../headers/picker.h"
